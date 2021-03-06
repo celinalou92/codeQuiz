@@ -54,7 +54,6 @@ header a {
 
 /* Main Styles Start */
 .main-child-container {
-    margin: 20vh auto;
     padding: 20px;
     height: 100%;
 }
@@ -89,4 +88,8 @@ header a {
 /* High Score Container */
 .high-score-container {
     display: none;
+}
+
+.score-item {
+    list-style: none;
 }

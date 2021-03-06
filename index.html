@@ -10,8 +10,8 @@
 </head>
 <body>
     <header>
-        <p class="high-score-link">
-            <a href="#">View High Scores</a>
+        <p>
+            <a class="high-score-link" href="#">View High Scores</a>
         </p>
         <p class="timer-containter">
             120 seconds 
@@ -45,10 +45,11 @@
             <h1>Quiz Completed</h1>
             <div class="container-content">
                 <p id="final-score-p"></p>
-                <form action="/">
+                <form method="POST">
                     <label for="high-score-input">Enter Initials</label>
-                    <input type="text" name="high-score-input" id="high-score-input">
+                    <input placeholder="Your Initials" type="text" name="high-score-input" id="high-score-input">
                     <input type="submit"  name="high-score-submit" id="high-score-submit">
+                    <p class="display-message"></p>
                  </form>
             </div>
             
@@ -59,8 +60,6 @@
         <section class="high-score-container main-child-container">
             <h1>High Scores</h1> 
             <ul class="high-score-el">
-                    
-                <li class="score-item" data-highscore-id="high-score-input"> 1. CL - 22</li>
             </ul>   
             <button id="clear-high-score-btn">Clear High Scores</button>
             <button id="back-to-begining">Go Back</button>
