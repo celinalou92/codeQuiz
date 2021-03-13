@@ -20,7 +20,7 @@ let questionIdCounter = 0;
 let currentQuestion = 0;
 let timeLeft 
 let scoreList = JSON.parse(localStorage.getItem('scoreList')) || [];
-
+let timer = 0;
 
 let questionsArr = [
     {
@@ -41,10 +41,10 @@ let questionsArr = [
 function timeInterval() {
     if(timeLeft === 0 || currentQuestion === 3){
         questionContainer.style.display = "none";
-        clearInterval(timeInterval);
+        clearInterval(timer);
         countdown.innerHTML = `<h3>Quiz Over</h3>`
-        console.log("end quiz record your score")
         finalScoreContainer.style.display = "block";
+        console.log("end quiz record your score")
     } else if(timeLeft > 1){
         countdown.innerText = timeLeft + " seconds remaining";
         timeLeft --;
@@ -52,7 +52,6 @@ function timeInterval() {
         countdown.innerText = timeLeft + " second remaining";
         timeLeft --;
     }
-
 }
 
 
@@ -69,10 +68,11 @@ function restart(){
     questionContainer.style.display = "none";
     descriptionContainer.style.display = "block";
     highScoreContainer.style.display = "none";
+    countdown.innerHTML = `60 Seconds Remaining`
     currentQuestion = 0;
     questionIdCounter= 0;
     score = 0;
-    clearInterval(timeInterval);
+    clearInterval(timer);
 }
 
 // error message for player input div
@@ -231,7 +231,7 @@ function startQuiz(){
     // hide description and make quiz visible 
     descriptionContainer.style.display = "none";
 
-    setInterval(timeInterval, 1000);
+    timer = setInterval(timeInterval, 1000);
     showQuestion()
 }
 
