@@ -43,7 +43,8 @@ function timeInterval() {
         questionContainer.style.display = "none";
         clearInterval(timeInterval);
         countdown.innerHTML = `<h3>Quiz Over</h3>`
-        highScoreContainer.style.display = "block";
+        console.log("end quiz record your score")
+        finalScoreContainer.style.display = "block";
     } else if(timeLeft > 1){
         countdown.innerText = timeLeft + " seconds remaining";
         timeLeft --;
