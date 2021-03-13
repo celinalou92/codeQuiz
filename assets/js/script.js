@@ -8,6 +8,7 @@ let playerSubmit = document.querySelector("#high-score-submit");
 let highScoreContainer = document.querySelector(".high-score-container");
 let highScoreLink = document.querySelector(".high-score-link")
 let highScoreUl = document.querySelector(".high-score-el");
+let clearHighScore = document.querySelector("#clear-high-score-btn")
 let quizListener = document.querySelector(".quiz-main");
 let countdown = document.querySelector(".timer-containter");
 let displayMsg = document.querySelector(".display-message");
@@ -17,9 +18,9 @@ let qContent
 let score = 0;
 let questionIdCounter = 0;
 let currentQuestion = 0;
-let timeLeft = 120;
-let scoreList = [];
-countdown.innerText = timeLeft + " seconds";
+let timeLeft 
+let scoreList = JSON.parse(localStorage.getItem('scoreList')) || [];
+
 
 let questionsArr = [
     {
@@ -37,15 +38,12 @@ let questionsArr = [
 ]
 
 // timer function
-
-// 2nd attempt 
 function timeInterval() {
-    console.log("timerstarted")
-    if(timeLeft === 0){
+    if(timeLeft === 0 || currentQuestion === 3){
         questionContainer.style.display = "none";
-        recordScore();
-        clearInterval(timeInterval)
-        countdown.innerHTML = `<h1> Out of time!</h1>`
+        clearInterval(timeInterval);
+        countdown.innerHTML = `<h3>Quiz Over</h3>`
+        highScoreContainer.style.display = "block";
     } else if(timeLeft > 1){
         countdown.innerText = timeLeft + " seconds remaining";
         timeLeft --;
@@ -53,47 +51,27 @@ function timeInterval() {
         countdown.innerText = timeLeft + " second remaining";
         timeLeft --;
     }
+
 }
 
-// let timerId = setInterval(timeInterval, 1000)
-
-// 1st attempt commented out below
-
-// let timeRemaining = function() {
-//     let timeInterval = setInterval(function() {
-//         if(timeLeft === 0){
-//             questionContainer.style.display = "none";
-//             recordScore();
-//             clearInterval(timeInterval)
-//             countdown.innerHTML = `<h1> Out of time!</h1>`
-//         } else if(timeLeft > 1){
-//             countdown.innerText = timeLeft + " seconds remaining";
-//             timeLeft --;
-//         } else {
-//             countdown.innerText = timeLeft + " second remaining";
-//             timeLeft --;
-//         }
-//      },1000);
-// }
 
 
 
 // clear highScore
 function clear(){
-
+    localStorage.clear();
+    viewHighScore();
 }
 
 // restart quiz
 function restart(){
+    questionContainer.style.display = "none";
     descriptionContainer.style.display = "block";
     highScoreContainer.style.display = "none";
     currentQuestion = 0;
     questionIdCounter= 0;
     score = 0;
-    timeLeft = 120;
-
-    startBtn.addEventListener("click", startQuiz);
-
+    clearInterval(timeInterval);
 }
 
 // error message for player input div
@@ -113,39 +91,42 @@ function viewHighScore(){
     highScoreContainer.style.display = "block";
 
     highScoreUl.innerHTML = "";
-
-    for( let i = 0; i < scoreList.length; i++){
+    let retrievedScoreList = JSON.parse(localStorage.getItem('scoreList'));
+    for( let i = 0; i < retrievedScoreList.length; i++){
         // make score elements to append to DOM
     let scoreEL = document.createElement("li");
-    scoreEL.innerHTML = `${i + 1}. ${scoreList[i].player} - ${scoreList[i].finalScore}`;
+    scoreEL.innerHTML = `${i + 1}. ${retrievedScoreList[i].player} - ${retrievedScoreList[i].finalScore}`;
     scoreEL.className = "score-item";
     highScoreUl.appendChild(scoreEL)
     }
 }
 
- // submit scor and store values in local storage
+ // submit score and store values in array
 function submitScore(event){
     event.preventDefault();
+    
+    let playerInitials = playerInput.value;
+     // Error handling for player input 
+     if(playerInitials === ""){
+         console.log(playerInitials)
+         displayMessage("error", "Initials cannot be blank");
+     } else if( playerInitials.length > 3){
+        displayMessage("error", "Initials are too long, please enter valid input")
+       }
 
-        let playerInitials = playerInput.value;
-        // Error handling for player input 
-        if(playerInitials === ""){
-            displayMessage("error", "Initials cannot be blank");
-        } else if( playerInitials.length > 3){
-            displayMessage("error", "Initials are too long, please enter valid input")
-        }
-        console.log(scoreList)
-        // save score to object 
-        let scoreObj = {
-            player: playerInitials,
-            finalScore: score,
-        };
+    // save score to object 
+    let scoreObj = {
+        player: playerInitials,
+        finalScore: score,
+    };
 
-        // push score to scoreList array
-        scoreList.push(scoreObj);
-        console.log(scoreList)
-
-        viewHighScore();
+     // push score to scoreList array
+    scoreList.push(scoreObj);
+    console.log(scoreList)
+    localStorage.setItem("scoreList",JSON.stringify(scoreList))
+    finalScoreContainer.style.display = "none";
+    viewHighScore();
+    
 }
 
 
@@ -153,8 +134,8 @@ function submitScore(event){
 function recordScore(){
     // display finalscore container 
     finalScoreContainer.style.display = "block";
-    finalScoreEl.innerHTML = `Your final score is: ${score}!`
-    
+    finalScoreEl.innerHTML = `Your final score is: ${score}!`;
+    // submitScore();
 }
 
 function selection(event) {
@@ -168,8 +149,6 @@ function selection(event) {
         } else {
             timeLeft -= 10;
             score -= 20;
-            console.log("wrong")
-            // TODO Subtract from Score and Time
         }
     } else if (currentQuestion === 1) {
         if(event.target.innerText === "<script>"){
@@ -179,19 +158,18 @@ function selection(event) {
             // TODO Subtract from Score and Time
             timeLeft -= 10;
             score -= 20;
-            console.log("wrong")
+           
         }
     } else {
         console.log("Last Else")
         if(event.target.innerText === "<script src='xxx.js'></script>"){
-            console.log("third question");
             score += 100;
             console.log(score);
          } else {
-            timeLeft -= 10;
             score -= 20;
-            console.log("wrong")
          };
+         currentQuestion++;
+         console.log(currentQuestion)
          qContent = document.getElementById(questionIdCounter)
          qContent.style.display = "none"
          recordScore();
@@ -204,18 +182,12 @@ function selection(event) {
     // Increment the question id 
     currentQuestion++;
     questionIdCounter++;
-    startQuiz();
+    showQuestion();
 };
 
 
 
-function startQuiz(){
-    console.log("clicked")
-    // hide description and make quiz visible 
-    descriptionContainer.style.display = "none";
-
-    setInterval(timeInterval, 1000);
-
+function showQuestion(){
     questionContainer.innerHTML = "";
     // make question container visible
     questionContainer.style.display = "block";
@@ -248,10 +220,19 @@ function startQuiz(){
 
      // increase task counter for next unique id
      console.log(`qContent id = ${questionIdCounter}`);
-
-     return timerId
 }
 
+
+function startQuiz(){
+    console.log("clicked")
+    timeLeft = 60;
+    countdown.innerText = timeLeft + " seconds remaining";
+    // hide description and make quiz visible 
+    descriptionContainer.style.display = "none";
+
+    setInterval(timeInterval, 1000);
+    showQuestion()
+}
 
 
 startBtn.addEventListener("click", startQuiz);
@@ -260,4 +241,4 @@ highScoreLink.addEventListener("click", viewHighScore);
 backBtn.addEventListener("click", restart);
 clearScoreBtn.addEventListener("click", clear);
 playerSubmit.addEventListener("click", submitScore)
-
+clearHighScore.addEventListener("click", clear)
