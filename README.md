@@ -6,7 +6,7 @@ A timed quiz app that will deduct 10 seconds from your score every time you get 
 ## Built With
 * HTML
 * CSS
-*Javascript
+* Javascript
 
 ## Screenshot of Site
 ![Code Quiz Screengrab](screengrab-codeQuiz_.png)
